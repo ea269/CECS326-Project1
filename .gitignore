@@ -1,0 +1,45 @@
+# Ignore object files, logs, and executables
+*.o
+*.out
+*.exe
+*.log
+
+# Ignore compiled libraries
+*.lib
+*.a
+*.so
+*.dylib
+
+# Ignore temporary or backup files
+*~
+*.swp
+*.tmp
+*.bak
+*.old
+
+# Ignore macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Ignore Windows system files
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Ignore Linux system files
+lost+found/
+
+# Ignore VSCode settings and workspace files
+.vscode/
+*.code-workspace
+
+# Ignore build directories
+/build/
+/dist/
+/node_modules/
+
+# Ignore CMake and Makefile generated files
+CMakeFiles/
+CMakeCache.txt
+Makefile
