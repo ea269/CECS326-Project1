@@ -1,6 +1,6 @@
 /**
  * filecopy.c
- * this is a test if it doesn't ask for log
+ *
  * This program copies files using a pipe.
  *
  */
