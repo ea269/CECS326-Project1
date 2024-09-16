@@ -1,6 +1,6 @@
 /**
  * filecopy.c
- * this is a test to push
+ * 
  * This program copies files using a pipe.
  *
  */
