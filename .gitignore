@@ -1,6 +1,7 @@
 # Ignore object files, logs, and executables
 *.o
 *.out
+*.
 *.exe
 *.log
 
