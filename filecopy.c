@@ -15,18 +15,14 @@
 #define READ_END 0
 #define WRITE_END 1
 
-int main(int argc, char *argv[])
-{
-	if (argc != 3) //Checks if there more or less than 2 parameter
-	{
+int main(int argc, char *argv[]) {
+	if (argc != 3) // Checks if there more or less than 2 parameter {
 		printf("Please enter 2 parameters:\n");
 		printf("Parameter 1: Source file.\n");
 		printf("Parameter 2: Destination file.\n");
         printf("Example: filecopy source.txt destination.txt\n");
 		exit(EXIT_SUCCESS);
 	}
+
 	return 0;
-	/*
-	Your code is here
-	*/
 }
