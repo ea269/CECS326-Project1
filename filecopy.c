@@ -25,26 +25,36 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_SUCCESS);
 	}
     */
-
-    printf("Forking will happen soon..\n");
     
     int id = fork();
-    // clone the calling process, creating an exact copy
-    // fork returns -1 for errors 0 for new processes (child)
-    printf("Fork id is %d\n", id);
+    int n;
+
+    if (id == 0) { // child process
+        n = 1;
+    } else { // parent process
+        n = 6;
+    }
+
+    if (id != 0) { // if we are in main process 
+        wait(NULL);
+    }
     
-    // each fork () is 2^n execution from there
-    if (id != 0) { // will only fork if its in main process (how we get odd number of forks)
-        fork();
+    // wait() // doing this here just stops all process
+    
+    int i;
+    for (i = n; i < n + 5; i++) {
+        printf("%d ", i); // normally this buffers so it  would wait for the whole process to run this loop and then print
+        fflush(stdout); // this prints it out as soon as it runs in every single iteration
+        usleep(10000); // found an error, where fflush doesnt print out each iteration, might be due to os
+        // usleep just allows more time for the os to switch betweeen proceess allowing it to be mixed like this:
+        // this is without wait() 
+        // with just printf() 6 7 8 9 10 \n 1 2 3 4 5 
+        // with fflush() 6 1 7 2 8 3 9 4 10 5
     }
 
-    if (id == 0) { // 0 = chilid
-        printf("Child Process\n");
-    } else { // a big random number = main
-        printf("Main Process\n");
+    if (id != 0) {
+        printf("\n");
     }
-
-    printf("Hello world\n");
 
 	return 0;
 }
