@@ -25,36 +25,46 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_SUCCESS);
 	}
     */
-    
-    int id = fork();
-    int n;
 
+    int fd[2]; // file descriptors
+    // fd[0] - read
+    // fd[1] - write
+    if (pipe(fd) == -1) { // pipe returns 0 if successful, -1 if not
+        printf("An error orccured with opening the pipe\n");
+        return 1;
+    }
+    
+    int id = fork(); // when you fork fd get copied over, they get inherited
+    // if you close the fd in one process, it remains open in the other, independent
+    if (id == -1) { // checks for forking error
+        printf("An error orccured with fork\n");
+        return 2;
+    }
+    
     if (id == 0) { // child process
-        n = 1;
-    } else { // parent process
-        n = 6;
+        close(fd[0]); // close read cause we not using it
+        int x;
+        printf("Enter a number: ");
+        scanf("%d", &x);
+        if (write(fd[1], &x, sizeof(int)) == -1) { // write() - fd, memory to write from, what to write
+            // checking for error (-1) else returns number written
+            printf("An error orccured with writing to the pipe\n");
+            return 3;
+        }
+        close(fd[1]); // close write after done
+    } else { // main process
+        close(fd[1]); // close write cause we not using it
+        int y;
+        if (read(fd[0], &y, sizeof(int)) == -1) { // read() - fd, read into something, what to write
+            // checking for error (-1), 0 end of file, returns number read 
+            printf("An error orccured with reading to the pipe\n");
+            return 4;
+        }
+        close(fd[0]); // close read after done
+        printf("Got from child process %d\n", y);
     }
 
-    if (id != 0) { // if we are in main process 
-        wait(NULL);
-    }
-    
-    // wait() // doing this here just stops all process
-    
-    int i;
-    for (i = n; i < n + 5; i++) {
-        printf("%d ", i); // normally this buffers so it  would wait for the whole process to run this loop and then print
-        fflush(stdout); // this prints it out as soon as it runs in every single iteration
-        usleep(10000); // found an error, where fflush doesnt print out each iteration, might be due to os
-        // usleep just allows more time for the os to switch betweeen proceess allowing it to be mixed like this:
-        // this is without wait() 
-        // with just printf() 6 7 8 9 10 \n 1 2 3 4 5 
-        // with fflush() 6 1 7 2 8 3 9 4 10 5
-    }
-
-    if (id != 0) {
-        printf("\n");
-    }
+    // we should check for errors when writing or reading: returns num written or read, or -1 (errors)
 
 	return 0;
 }
