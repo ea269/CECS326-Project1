@@ -44,17 +44,17 @@ int main(int argc, char *argv[]) {
     }
 
     if (id == 0) { // child process 
-        int y;
-        read(fd[0], &y, READ_END);
-        write(fd[1], f2, &y);
         close(fd[0]);
+        if (write(fd[1], f2, READ_END) == -1) { // -1: error, 0 end of file, returns number written
+            printf("An error occured with writing to the pipe\n");
+        }
         close(fd[1]);
     } else { // parent process
-        int x;
-        read(fd[0], &x, f1);
-        write(fd[1], WRITE_END, &x);
-        close(fd[0]);
         close(fd[1]);
+        if (read(fd[0], WRITE_END, f1)) { // -1: error, 0 end of file, returns number read
+            printf("An error occured with writing to the pipe\n");
+        }
+        close(fd[0]);
     }
     
 	return 0;
