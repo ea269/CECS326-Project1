@@ -25,27 +25,37 @@ int main(int argc, char *argv[]) {
 	}
     
     // Read/Write file
-    FILE *f1;
-    FILE *f2;
+    //FILE *f1;
+    //FILE *f2;
     
-    f1 = fopen(argv[1], "r");
-    f2 = fopen(argv[2], "w");
+    FILE *f1 = fopen(argv[1], "r");
+    FILE *f2 = fopen(argv[2], "w");
 
     // Piping
     int fd[2];
-    pipe(fd);
+    if (pipe(fd) == -1) { // -1 returning from pipe indicates error
+        printf("An error occured with opening the pipe\n");
+    }
 
     // Forking
     int id = fork();
+    if (id == -1) { // -1 returning from fork indicates error
+        printf("An error occured with forking\n");
+    }
 
     if (id == 0) { // child process 
-        close(fd[1]);
-        read(fd[0], READ_END, f2);
-        close(fd[1]);
-    } else { // parent process
-        close(fd[1]);
-        read(fd[0], f1, WRITE_END);
+        int y;
+        read(fd[0], &y, READ_END);
+        write(fd[1], f2, &y);
         close(fd[0]);
+        close(fd[1]);
+
+    } else { // parent process
+        int x;
+        read(fd[0], &x, f1);
+        write(fd[1], WRITE_END, &x);
+        close(fd[0]);
+        close(fd[1]);
     }
     
 	return 0;
