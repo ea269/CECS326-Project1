@@ -32,13 +32,13 @@ int main(int argc, char *argv[]) {
     FILE *f2 = fopen(argv[2], "w");
 
     // Piping
-    int fd[2];
+    int fd[2]; // f[0] - read, f[1] - write
     if (pipe(fd) == -1) { // -1 returning from pipe indicates error
         printf("An error occured with opening the pipe\n");
     }
 
     // Forking
-    int id = fork();
+    int id = fork(); // returns 0 for child process, a big num for parent process
     if (id == -1) { // -1 returning from fork indicates error
         printf("An error occured with forking\n");
     }
@@ -49,7 +49,6 @@ int main(int argc, char *argv[]) {
         write(fd[1], f2, &y);
         close(fd[0]);
         close(fd[1]);
-
     } else { // parent process
         int x;
         read(fd[0], &x, f1);
