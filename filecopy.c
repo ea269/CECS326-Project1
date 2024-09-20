@@ -31,13 +31,21 @@ int main(int argc, char *argv[]) {
     f1 = fopen(argv[1], "r");
     f2 = fopen(argv[2], "w");
 
+    // Piping
+    int fd[2];
+    pipe(fd);
+
     // Forking
     int id = fork();
 
     if (id == 0) { // child process 
-        printf("This is the child process %d\n", id);
-    } else { // main process
-        printf("This is the main process %d\n", id);
+        close(fd[1]);
+        read(fd[0], READ_END, f2);
+        close(fd[1]);
+    } else { // parent process
+        close(fd[1]);
+        read(fd[0], f1, WRITE_END);
+        close(fd[0]);
     }
     
 	return 0;
