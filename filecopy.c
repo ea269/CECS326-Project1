@@ -30,6 +30,15 @@ int main(int argc, char *argv[]) {
     
     f1 = fopen(argv[1], "r");
     f2 = fopen(argv[2], "w");
+
+    // Forking
+    int id = fork();
+
+    if (id == 0) { // child process 
+        printf("This is the child process %d\n", id);
+    } else { // main process
+        printf("This is the main process %d\n", id);
+    }
     
 	return 0;
 }
