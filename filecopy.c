@@ -25,9 +25,6 @@ int main(int argc, char *argv[]) {
 	}
     
     // Read/Write file
-    //FILE *f1;
-    //FILE *f2;
-    
     FILE *f1 = fopen(argv[1], "r");
     FILE *f2 = fopen(argv[2], "w");
 
@@ -35,27 +32,32 @@ int main(int argc, char *argv[]) {
     int fd[2]; // f[0] - read, f[1] - write
     if (pipe(fd) == -1) { // -1 returning from pipe indicates error
         printf("An error occured with opening the pipe\n");
+        exit(EXIT_FAILURE);
     }
 
     // Forking
     int id = fork(); // returns 0 for child process, a big num for parent process
     if (id == -1) { // -1 returning from fork indicates error
         printf("An error occured with forking\n");
+        exit(EXIT_FAILURE);
     }
 
     if (id == 0) { // child process 
-        close(fd[0]);
-        if (write(fd[1], f2, READ_END) == -1) { // -1: error, 0 end of file, returns number written
-            printf("An error occured with writing to the pipe\n");
+        close(fd[READ_END]);
+        if (write(fd[WRITE_END], f2, EOF) == -1) { // -1: error, 0 end of file, returns number written
+            printf("An error occured with child writing to the pipe\n");
+            exit(EXIT_FAILURE);
         }
-        close(fd[1]);
+        close(fd[WRITE_END]);
+
     } else { // parent process
-        close(fd[1]);
-        if (read(fd[0], WRITE_END, f1)) { // -1: error, 0 end of file, returns number read
-            printf("An error occured with writing to the pipe\n");
+        close(fd[WRITE_END]);
+        if (read(fd[READ_END], f1, EOF) == -1) { // -1: error, 0 end of file, returns number read
+            printf("An error occured with parent writing to the pipe\n");
+            exit(EXIT_FAILURE);
         }
-        close(fd[0]);
+        close(fd[READ_END]);
     }
-    
+
 	return 0;
 }
