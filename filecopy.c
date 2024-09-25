@@ -15,6 +15,7 @@
 #define READ_END 0
 #define WRITE_END 1
 #define BUFFER_SIZE 1024
+// #define STRING_SIZE 256
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {  // Checks if there more or less than 2 parameter
@@ -60,8 +61,9 @@ int main(int argc, char *argv[]) {
         char buffer[BUFFER_SIZE];
         // const void *__restrict__ __ptr, size_t __size, size_t __nitems,
         // FILE *__restrict__ __stream)
-        //
-        fclose(f1);
+        ssize_t bytes_read = fread(fd[WRITE_END], sizeof(char), buffer, f2);
+        fwrite(buffer, sizeof(char), bytes_read, f2);
+        fclose(f2);
         close(fd[WRITE_END]);
 
     } else {  // parent process
@@ -69,8 +71,9 @@ int main(int argc, char *argv[]) {
         fclose(fd[WRITE_END]);
 
         char buffer[BUFFER_SIZE];
-        
-        fclose(f2);
+        ssize_t bytes_read = fread(fd[READ_END], sizeof(char), buffer, f1);
+        fwrite(fd[READ_END], sizeof(char), buffer, f1);
+        fclose(f1);
         close(fd[READ_END]);
         wait(NULL);  // waiting on child process to finish
     }
