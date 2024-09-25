@@ -55,20 +55,20 @@ int main(int argc, char *argv[]) {
 
     if (id == 0) {  // child process
         // we are reading form read_end, write to destination.txt
-        close(fd[WRITE_END]);
+        close(fd[READ_END]);
 
         char buffer[BUFFER_SIZE];
         // const void *__restrict__ __ptr, size_t __size, size_t __nitems,
         // FILE *__restrict__ __stream)
         //
-        close(fd[READ_END]);
+        close(fd[WRITE_END]);
 
     } else {  // parent process
         // read from source file, and writing to write_end
-        close(fd[READ_END]);
+        close(fd[WRITE_END]);
 
         char buffer[BUFFER_SIZE];
-        
+
         close(fd[READ_END]);
     }
 
