@@ -26,20 +26,6 @@ int main(int argc, char *argv[]) {
         exit(EXIT_SUCCESS);
     }
 
-    // Read/Write file
-    FILE *f1 = fopen(argv[1], "r");
-    FILE *f2 = fopen(argv[2], "w");
-
-    if (f1 == NULL) {
-        printf("Error opening source file.\n");
-        exit(EXIT_FAILURE);
-    } else if  (f2 == NULL) {
-        printf("Error opening destination file.\n");
-        exit(EXIT_FAILURE);
-    } else {
-        printf("Success opening files.\n");
-    }
-
     // Piping
     int fd[2];  // f[0] - read, f[1] - write
     if (pipe(fd) == -1) {  // -1 returning from pipe indicates error
@@ -55,26 +41,42 @@ int main(int argc, char *argv[]) {
     }
 
     if (id == 0) {  // child process
+        FILE *f2 = fopen(argv[2], "w");
+        if (f2 == NULL) {
+            printf("Error opening destination file.\n");
+            exit(EXIT_FAILURE);
+        }
+
         // we are reading form read_end, write to destination.txt
-        close(fd[READ_END]);
+        //close(fd[READ_END]);
 
         char buffer[BUFFER_SIZE];
         // const void *__restrict__ __ptr, size_t __size, size_t __nitems,
         // FILE *__restrict__ __stream)
-        ssize_t bytes_read = fread(fd[WRITE_END], sizeof(char), buffer, f2);
+        ssize_t bytes_read = fread(fd[0], sizeof(char), buffer, f2);
         fwrite(buffer, sizeof(char), bytes_read, f2);
         fclose(f2);
-        close(fd[WRITE_END]);
+        //close(fd[WRITE_END]);
+        close(fd[0]);
+        close(fd[1]);
 
     } else {  // parent process
+        FILE *f1 = fopen(argv[1], "r");
+        if (f1 == NULL) {
+            printf("Error opening source file.\n");
+            exit(EXIT_FAILURE);
+        }
+
         // read from source file, and writing to write_end
-        fclose(fd[WRITE_END]);
+        //fclose(fd[WRITE_END]);
 
         char buffer[BUFFER_SIZE];
-        ssize_t bytes_read = fread(fd[READ_END], sizeof(char), buffer, f1);
-        fwrite(fd[READ_END], sizeof(char), buffer, f1);
+        ssize_t bytes_read = fread(fd[0], sizeof(char), buffer, f1);
+        fwrite(fd[1], sizeof(char), buffer, f1);
         fclose(f1);
-        close(fd[READ_END]);
+        //close(fd[READ_END]);
+        close(fd[0]);
+        close(fd[1]);
         wait(NULL);  // waiting on child process to finish
     }
 
