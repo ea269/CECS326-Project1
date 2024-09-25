@@ -31,6 +31,8 @@ int main(int argc, char *argv[]) {
     f1 = fopen(argv[1], "r");
     f2 = fopen(argv[2], "w");
 
+
+    int fd[2]; // f[0] - read, f[1] - write
 	//piping
 	int fd[2]; // f[0] -read, f[1]- write
 	if (pipe(fd) == -1) { // -1 returing from pipe indicates error
@@ -44,7 +46,11 @@ int main(int argc, char *argv[]) {
 	}
 
     // Forking
-    int id = fork();
+    int id = fork(); // returns 0 for child process, a big num for parent process
+    if (id == -1) { // -1 returning from fork indicates error
+        printf("An error occured with forking\n");
+        exit(EXIT_FAILURE);
+    }
 
     if (id == 0) { // child process
 		 close(fd[READ_END]);
@@ -64,5 +70,6 @@ int main(int argc, char *argv[]) {
     }
 
     printf("File successfully copied %d", argv[1], "to%d", argv[2]); 
+
 	return 0;
 }
