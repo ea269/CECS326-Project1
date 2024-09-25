@@ -31,8 +31,10 @@ int main(int argc, char *argv[]) {
 
     if (f1 == NULL) {
         printf("Error opening source file.\n");
+        exit(EXIT_FAILURE);
     } else if  (f2 == NULL) {
         printf("Error opening destination file.\n");
+        exit(EXIT_FAILURE);
     } else {
         printf("Success opening files.\n");
     }
@@ -52,19 +54,21 @@ int main(int argc, char *argv[]) {
     }
 
     if (id == 0) {  // child process
-        close(fd[READ_END]);
-        if (fwrite(fd[WRITE_END], f2, BUFFER_SIZE) == -1) { // -1: error, 0 end of file, returns number written
-            printf("An error occured with child writing to the pipe\n");
-            exit(EXIT_FAILURE);
-        }
+        // we are reading form read_end, write to destination.txt
         close(fd[WRITE_END]);
 
+        char buffer[BUFFER_SIZE];
+        // const void *__restrict__ __ptr, size_t __size, size_t __nitems,
+        // FILE *__restrict__ __stream)
+        //
+        close(fd[READ_END]);
+
     } else {  // parent process
-        close(fd[WRITE_END]);
-        if (fread(fd[READ_END], f1, BUFFER_SIZE) == -1) {  // -1: error, 0 end of file, returns number read
-            printf("An error occured with parent writing to the pipe\n");
-            exit(EXIT_FAILURE);
-        }
+        // read from source file, and writing to write_end
+        close(fd[READ_END]);
+
+        char buffer[BUFFER_SIZE];
+        
         close(fd[READ_END]);
     }
 
