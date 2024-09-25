@@ -29,6 +29,14 @@ int main(int argc, char *argv[]) {
     FILE *f1 = fopen(argv[1], "r");
     FILE *f2 = fopen(argv[2], "w");
 
+    if (f1 == NULL) {
+        printf("Error opening source file.\n");
+    } else if  (f2 == NULL) {
+        printf("Error opening destination file.\n");
+    } else {
+        printf("Success opening files.\n");
+    }
+
     // Piping
     int fd[2];  // f[0] - read, f[1] - write
     if (pipe(fd) == -1) {  // -1 returning from pipe indicates error
@@ -45,7 +53,7 @@ int main(int argc, char *argv[]) {
 
     if (id == 0) {  // child process
         close(fd[READ_END]);
-        if (fwrite(fd[WRITE_END], f2, EOF) == -1) { // -1: error, 0 end of file, returns number written
+        if (fwrite(fd[WRITE_END], f2, BUFFER_SIZE) == -1) { // -1: error, 0 end of file, returns number written
             printf("An error occured with child writing to the pipe\n");
             exit(EXIT_FAILURE);
         }
@@ -53,7 +61,7 @@ int main(int argc, char *argv[]) {
 
     } else {  // parent process
         close(fd[WRITE_END]);
-        if (fread(fd[READ_END], f1, size) == -1) {  // -1: error, 0 end of file, returns number read
+        if (fread(fd[READ_END], f1, BUFFER_SIZE) == -1) {  // -1: error, 0 end of file, returns number read
             printf("An error occured with parent writing to the pipe\n");
             exit(EXIT_FAILURE);
         }
