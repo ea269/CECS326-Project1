@@ -15,7 +15,7 @@
 #define READ_END 0
 #define WRITE_END 1
 #define BUFFER_SIZE 1024
-// #define STRING_SIZE 256
+#define STRING_SIZE 256
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {  // Checks if there more or less than 2 parameter
@@ -53,8 +53,12 @@ int main(int argc, char *argv[]) {
         char buffer[BUFFER_SIZE];
         // const void *__restrict__ __ptr, size_t __size, size_t __nitems,
         // FILE *__restrict__ __stream)
-        ssize_t bytes_read = fread(fd[0], sizeof(char), buffer, f2);
-        fwrite(buffer, sizeof(char), bytes_read, f2);
+    
+        ssize_t bytes_read; // cannot declare this in while loop
+        // returns num of elements read, so check if > 0
+        while ((bytes_read = fread(fd[0], sizeof(buffer), STRING_SIZE, f2)) > 0) {
+            fwrite(buffer, sizeof(char), bytes_read, f2);
+        }
         fclose(f2);
         //close(fd[WRITE_END]);
         close(fd[0]);
@@ -71,8 +75,11 @@ int main(int argc, char *argv[]) {
         //fclose(fd[WRITE_END]);
 
         char buffer[BUFFER_SIZE];
-        ssize_t bytes_read = fread(fd[0], sizeof(char), buffer, f1);
-        fwrite(fd[1], sizeof(char), buffer, f1);
+        ssize_t bytes_read; // cannot declare this in while loop
+        // returns num of elements read, so check if > 0
+        while ((bytes_read = fread(fd[0], sizeof(buffer), STRING_SIZE, f1)) > 0) {
+            fwrite(fd[1], sizeof(buffer), STRING_SIZE, f1);
+        }
         fclose(f1);
         //close(fd[READ_END]);
         close(fd[0]);
