@@ -61,14 +61,16 @@ int main(int argc, char *argv[]) {
         // const void *__restrict__ __ptr, size_t __size, size_t __nitems,
         // FILE *__restrict__ __stream)
         //
+        fclose(f1);
         close(fd[WRITE_END]);
 
     } else {  // parent process
         // read from source file, and writing to write_end
-        close(fd[WRITE_END]);
+        fclose(fd[WRITE_END]);
 
         char buffer[BUFFER_SIZE];
-
+        
+        fclose(f2);
         close(fd[READ_END]);
         wait(NULL);  // waiting on child process to finish
     }
