@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
         ssize_t bytes_read; // cannot declare this in while loop
 
         // returns num of elements read, so check if > 0
-        while ((bytes_read = fread(buffer, sizeof(buffer), STRING_SIZE, f2)) > 0) {
+        while ((bytes_read = read(fd[READ_END], sizeof(buffer), f2)) > 0) {
             fwrite(buffer, sizeof(char), bytes_read, f2);
         }
         fclose(f2);
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
         //
         // returns num of elements read, so check if > 0
         while ((bytes_read = fread(buffer, sizeof(buffer), STRING_SIZE, f1)) > 0) {
-            fwrite(buffer, sizeof(buffer), STRING_SIZE, f1);
+            write(fd[WRITE_END], sizeof(buffer), f1);
         }
         fclose(f1);
         close(fd[READ_END]);
