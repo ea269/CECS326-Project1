@@ -41,49 +41,48 @@ int main(int argc, char *argv[]) {
     }
 
     if (id == 0) {  // child process
+        // closes the read pipe
+        close(fd[READ_END]);
+        
+        // open the destination file to write
         FILE *f2 = fopen(argv[2], "w");
         if (f2 == NULL) {
             printf("Error opening destination file.\n");
             exit(EXIT_FAILURE);
         }
 
-        // we are reading form read_end, write to destination.txt
-        //close(fd[READ_END]);
-
         char buffer[BUFFER_SIZE];
-        // const void *__restrict__ __ptr, size_t __size, size_t __nitems,
-        // FILE *__restrict__ __stream)
-    
+
         ssize_t bytes_read; // cannot declare this in while loop
+
         // returns num of elements read, so check if > 0
-        while ((bytes_read = fread(fd[0], sizeof(buffer), STRING_SIZE, f2)) > 0) {
+        while ((bytes_read = fread(buffer, sizeof(buffer), STRING_SIZE, f2)) > 0) {
             fwrite(buffer, sizeof(char), bytes_read, f2);
         }
         fclose(f2);
-        //close(fd[WRITE_END]);
-        close(fd[0]);
-        close(fd[1]);
+        close(fd[WRITE_END]);
 
     } else {  // parent process
+        // closes the write pipe
+        close(fd[WRITE_END]);
+        
+        // open the source file to read
         FILE *f1 = fopen(argv[1], "r");
         if (f1 == NULL) {
             printf("Error opening source file.\n");
             exit(EXIT_FAILURE);
         }
 
-        // read from source file, and writing to write_end
-        //fclose(fd[WRITE_END]);
-
         char buffer[BUFFER_SIZE];
+
         ssize_t bytes_read; // cannot declare this in while loop
+        //
         // returns num of elements read, so check if > 0
-        while ((bytes_read = fread(fd[0], sizeof(buffer), STRING_SIZE, f1)) > 0) {
-            fwrite(fd[1], sizeof(buffer), STRING_SIZE, f1);
+        while ((bytes_read = fread(buffer, sizeof(buffer), STRING_SIZE, f1)) > 0) {
+            fwrite(buffer, sizeof(buffer), STRING_SIZE, f1);
         }
         fclose(f1);
-        //close(fd[READ_END]);
-        close(fd[0]);
-        close(fd[1]);
+        close(fd[READ_END]);
         wait(NULL);  // waiting on child process to finish
     }
 
