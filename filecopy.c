@@ -70,6 +70,7 @@ int main(int argc, char *argv[]) {
         char buffer[BUFFER_SIZE];
 
         close(fd[READ_END]);
+        wait(NULL);  // waiting on child process to finish
     }
 
     return 0;
