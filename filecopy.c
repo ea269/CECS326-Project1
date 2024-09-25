@@ -16,6 +16,7 @@
 #define WRITE_END 1
 #define BUFFER_SIZE 1024
 
+
 int main(int argc, char *argv[]) {
     if (argc != 3) {  // Checks if there more or less than 2 parameter
         printf("Please enter 2 parameters:\n");
@@ -28,7 +29,7 @@ int main(int argc, char *argv[]) {
     // Read/Write file
     FILE *f1 = fopen(argv[1], "r");
     FILE *f2 = fopen(argv[2], "w");
-    
+
     if (f1 == NULL) {
         printf("Error opening source file.\n");
         exit(EXIT_FAILURE);
@@ -56,30 +57,21 @@ int main(int argc, char *argv[]) {
     if (id == 0) {  // child process
         // we are reading form read_end, write to destination.txt
         close(fd[WRITE_END]);
-		
-		char read_byte;
-		read(fd[0], &read_byte, sizeof(read_byte));
 
         char buffer[BUFFER_SIZE];
         // const void *__restrict__ __ptr, size_t __size, size_t __nitems,
         // FILE *__restrict__ __stream)
         //
-        fclose(f2);
         close(fd[READ_END]);
 
     } else {  // parent process
         // read from source file, and writing to write_end
-        fclose(fd[READ_END]);
+        close(fd[READ_END]);
 
         char buffer[BUFFER_SIZE];
-		char read_byte;
-        write(fd[1], &read_byte, sizeof(read_byte)); 
-
-        fclose(f1);
-        close(fd[WRITE_END]);
-        wait(NULL);  // waiting on child process to finish
+        
+        close(fd[READ_END]);
     }
-	printf("File successfully copied %d", argv[1], "to%d", argv[2]); 
 
     return 0;
 }
