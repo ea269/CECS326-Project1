@@ -25,20 +25,44 @@ int main(int argc, char *argv[]) {
 	}
     
     // Read/Write file
-    FILE *f1;
-    FILE *f2;
+    FILE *f1 = fopen(argv[1], "r");
+    FILE *f2 = fopen(argv[2], "w");
     
     f1 = fopen(argv[1], "r");
     f2 = fopen(argv[2], "w");
 
+	//piping
+	int fd[2]; // f[0] -read, f[1]- write
+	if (pipe(fd) == -1) { // -1 returing from pipe indicates error
+		printf("An error occured with opening the pipe\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (id == -1) {  // -1 returning from fork indicates error
+	    printf("An error occured with forking\n");
+		exit(EXIT_FAILURE);
+	}
+
     // Forking
     int id = fork();
 
-    if (id == 0) { // child process 
-        printf("This is the child process %d\n", id);
-    } else { // main process
-        printf("This is the main process %d\n", id);
+    if (id == 0) { // child process
+		 close(fd[READ_END]);
+		 if (fwrite(fd[WRITE_END], f2, EOF) == -1) { // -1: error, 0 end of file, returns number written
+			printf("An error occured with child writing to the pipe\n");
+			exit(EXIT_FAILURE);
+		 }
+		 close(fd[WRITE_END])
+
+	} else { // main process
+		close(fd[WRITE_END]);
+        if (fread(fd[READ_END], f1, size) == -1) {  // -1: error, 0 end of file, returns number read
+			printf("An error occured with parent writing to the pipe\n");
+			exit(EXIT_FAILURE);
+		}
+		close(fd[READ_END]);
     }
-    
+
+    printf("File successfully copied %d", argv[1], "to%d", argv[2]); 
 	return 0;
 }
