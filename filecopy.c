@@ -62,12 +62,8 @@ int main(int argc, char *argv[]) {
         if (read(fd[READ_END], buffer, BUFFER_SIZE) == -1) {
             printf("Could not read from the pipe.\n");
             exit(EXIT_FAILURE);
-        }
-
-        bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE);
-
-        if ((bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE)) == 0) {
-            printf("Could not read\n");
+        } else {
+            bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE);
         }
 
         // write in destination file
