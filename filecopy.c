@@ -14,7 +14,7 @@
 
 #define READ_END 0
 #define WRITE_END 1
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 25
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {  // Checks if there more or less than 2 parameter
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
         printf("Parameter 1: Source file.\n");
         printf("Parameter 2: Destination file.\n");
         printf("Example: filecopy source.txt destination.txt\n");
-        exit(EXIT_SUCCESS);
+        exit(EXIT_FAILURE);
     }
 
     // Piping
@@ -58,19 +58,18 @@ int main(int argc, char *argv[]) {
         char buffer[BUFFER_SIZE];
         ssize_t bytes_read;  // cannot declare this in while loop
 
-        // checks if read gives us an error
-        if ((bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE)) == -1) {
-            printf("Could not read from the pipe.");
-            exit(EXIT_FAILURE);
-        } 
-
-        // Read from the pipe
-        while (bytes_read > 0) {
+        // Read from the pipe and write to the destination file
+        while ((bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE)) > 0) {
             // check if the right num of bytes is written
             if (fwrite(buffer, sizeof(char), bytes_read, f2) != bytes_read) {
                 printf("Error writing to destination file.\n");
                 exit(EXIT_FAILURE);
             }         
+        }
+
+        if (bytes_read == -1) {
+            printf("Could not read from the pipe.");
+            exit(EXIT_FAILURE);
         }
 
         fclose(f2);
@@ -97,12 +96,8 @@ int main(int argc, char *argv[]) {
         char buffer[BUFFER_SIZE];
         ssize_t bytes_read;  // cannot declare this in while loop
 
-        // read from souce file
-        bytes_read = fread(buffer, sizeof(char), BUFFER_SIZE, f1);
-        // returns 0 if EOF, or error
-
-        // write to pipe
-        while (bytes_read > 0) {  // checks if bytes are to be read
+        // read from source file and write to pipe
+        while ((bytes_read = fread(buffer, sizeof(char), BUFFER_SIZE, f1)) > 0) {  // checks if bytes are to be read, returns 0 if EOF, or error
             if (write(fd[WRITE_END], buffer, bytes_read) == -1) {
                 printf("Could not write from source file to pipe.");
                 exit(EXIT_FAILURE);
@@ -110,7 +105,7 @@ int main(int argc, char *argv[]) {
         }
 
         fclose(f1);
-        close(fd[READ_END]);
+        close(fd[WRITE_END]);
         wait(NULL);  // waiting on child process to finish
     }
     return 0;
