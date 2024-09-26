@@ -102,16 +102,19 @@ int main(int argc, char *argv[]) {
         // read from souce file
         bytes_read = fread(buffer, sizeof(char), BUFFER_SIZE, f1);
 
+        if ((bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE)) == 0) {
+            printf("Could not read\n");
+        }
+
+
+		ssize_t write_id = write(fd[WRITE_END], buffer, bytes_read);
         // write to pipe
         while (bytes_read > 0) {
-            if (write(fd[WRITE_END], buffer, bytes_read) == -1){
+            if (write_id == -1){
 				printf("can't write to the pipe");
 				exit (EXIT_FAILURE);
 			}
-			write(fd[WRITE_END], buffer, bytes_read);
-        }
-        if ((bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE)) == 0) {
-            printf("Could not read\n");
+		    write(fd[WRITE_END], buffer, bytes_read);
         }
 
         fclose(f1);
