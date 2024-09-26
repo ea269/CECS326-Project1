@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
         }
 
         char buffer[BUFFER_SIZE];
-        ssize_t bytes_read;  // cannot declare this in while loop
+        ssize_t bytes_read;  // NOTE: cannot declare this in while loop
 
         // Read from the pipe and write to the destination file
         while ((bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE)) > 0) {
@@ -66,12 +66,14 @@ int main(int argc, char *argv[]) {
                 exit(EXIT_FAILURE);
             }         
         }
+        // NOTE: Both read and writing have to be in a while loop
 
         if (bytes_read == -1) {
             printf("Could not read from the pipe.");
             exit(EXIT_FAILURE);
         }
 
+        printf("Child process done.\n");
         fclose(f2);
         close(fd[READ_END]);
 
@@ -103,7 +105,9 @@ int main(int argc, char *argv[]) {
                 exit(EXIT_FAILURE);
             } 
         }
-
+        // NOTE: you only need to write once, checking for error also writes to pipe either way
+        
+        printf("Parent process done.\n");
         fclose(f1);
         close(fd[WRITE_END]);
         wait(NULL);  // waiting on child process to finish
