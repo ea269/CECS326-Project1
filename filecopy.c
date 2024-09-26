@@ -58,16 +58,21 @@ int main(int argc, char *argv[]) {
         char buffer[BUFFER_SIZE];
         ssize_t bytes_read;  // cannot declare this in while loop
 
-        // check for errors when reading from pipe
-        if (read(fd[READ_END], buffer, BUFFER_SIZE) == -1) {
-            printf("Could not read from the pipe.\n");
+        // checks if read gives us an error
+        if ((bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE)) == -1) {
+            printf("Could not read from the pipe.");
             exit(EXIT_FAILURE);
-        } else {  // read from pipe
-            bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE);
+        } 
+
+        // Read from the pipe
+        while (bytes_read > 0) {
+            // check if the right num of bytes is written
+            if (fwrite(buffer, sizeof(char), bytes_read, f2) != bytes_read) {
+                printf("Error writing to destination file.\n");
+                exit(EXIT_FAILURE);
+            }         
         }
 
-        // write in destination file
-        fwrite(buffer, sizeof(char), bytes_read, f2);
         fclose(f2);
         close(fd[READ_END]);
 
@@ -92,20 +97,16 @@ int main(int argc, char *argv[]) {
         char buffer[BUFFER_SIZE];
         ssize_t bytes_read;  // cannot declare this in while loop
 
-        // check for error when reading from source file
-        if ((bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE)) == 0) {
-            printf("Could not read from source file.\n");
-        } else {  // read from souce file
-            bytes_read = fread(buffer, sizeof(char), BUFFER_SIZE, f1);
-        }
+        // read from souce file
+        bytes_read = fread(buffer, sizeof(char), BUFFER_SIZE, f1);
+        // returns 0 if EOF, or error
 
         // write to pipe
-        while (bytes_read > 0) {
+        while (bytes_read > 0) {  // checks if bytes are to be read
             if (write(fd[WRITE_END], buffer, bytes_read) == -1) {
                 printf("Could not write from source file to pipe.");
                 exit(EXIT_FAILURE);
-            }
-            write(fd[WRITE_END], buffer, bytes_read);
+            } 
         }
 
         fclose(f1);
