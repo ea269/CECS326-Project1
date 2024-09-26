@@ -15,7 +15,7 @@
 #define READ_END 0
 #define WRITE_END 1
 #define BUFFER_SIZE 1024
-#define STRING_SIZE 256
+//#define STRING_SIZE 256
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {  // Checks if there more or less than 2 parameter
@@ -60,11 +60,18 @@ int main(int argc, char *argv[]) {
 
         ssize_t bytes_read; // cannot declare this in while loop
 
-        // returns num of elements read, so check if > 0
-        while ((bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE)) > 0) {
-            printf("In while loop, reading and writing..");
+        // read from pipe
+        bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE);
+
+        // write in destination file
+        while (bytes_read > 0) {
             fwrite(buffer, sizeof(char), bytes_read, f2);
         }
+
+        if ((bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE)) == 0) {
+            printf("Could not read\n");
+        }
+
         fclose(f2);
         close(fd[READ_END]);
 
@@ -74,7 +81,7 @@ int main(int argc, char *argv[]) {
 
         //  lets user know what process is running
         printf("Running Parent process...\n");
-        
+
         // open the source file to read
         FILE *f1 = fopen(argv[1], "r");
         if (f1 == NULL) {
@@ -87,12 +94,18 @@ int main(int argc, char *argv[]) {
         char buffer[BUFFER_SIZE];
 
         ssize_t bytes_read; // cannot declare this in while loop
-        //
-        // returns num of elements read, so check if > 0
-        while ((bytes_read = fread(buffer, sizeof(char), STRING_SIZE, f1)) > 0) {
-            printf("In while loop, reading and writing..");
+
+        // read from souce file
+        bytes_read = fread(buffer, sizeof(char), BUFFER_SIZE, f1);
+
+        // write to pipe
+        while (bytes_read > 0) {
             write(fd[WRITE_END], buffer, bytes_read);
         }
+        if ((bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE)) == 0) {
+            printf("Could not read\n");
+        }
+
         fclose(f1);
         close(fd[READ_END]);
         wait(NULL);  // waiting on child process to finish
