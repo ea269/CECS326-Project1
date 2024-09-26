@@ -42,13 +42,18 @@ int main(int argc, char *argv[]) {
 
     if (id == 0) {  // child process
         // closes the read pipe
-        close(fd[READ_END]);
-        
+        close(fd[WRITE_END]);
+
+        // Lets user know what process is currently running
+        printf("Running child process...\n");
+
         // open the destination file to write
         FILE *f2 = fopen(argv[2], "w");
         if (f2 == NULL) {
             printf("Error opening destination file.\n");
             exit(EXIT_FAILURE);
+        } else {
+            printf("Destination file opened.\n");
         }
 
         char buffer[BUFFER_SIZE];
@@ -56,21 +61,27 @@ int main(int argc, char *argv[]) {
         ssize_t bytes_read; // cannot declare this in while loop
 
         // returns num of elements read, so check if > 0
-        while ((bytes_read = read(fd[READ_END], sizeof(buffer), f2)) > 0) {
+        while ((bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE)) > 0) {
+            printf("In while loop, reading and writing..");
             fwrite(buffer, sizeof(char), bytes_read, f2);
         }
         fclose(f2);
-        close(fd[WRITE_END]);
+        close(fd[READ_END]);
 
     } else {  // parent process
         // closes the write pipe
-        close(fd[WRITE_END]);
+        close(fd[READ_END]);
+
+        //  lets user know what process is running
+        printf("Running Parent process...\n");
         
         // open the source file to read
         FILE *f1 = fopen(argv[1], "r");
         if (f1 == NULL) {
             printf("Error opening source file.\n");
             exit(EXIT_FAILURE);
+        } else {
+            printf("Source file opened.\n");
         }
 
         char buffer[BUFFER_SIZE];
@@ -78,8 +89,9 @@ int main(int argc, char *argv[]) {
         ssize_t bytes_read; // cannot declare this in while loop
         //
         // returns num of elements read, so check if > 0
-        while ((bytes_read = fread(buffer, sizeof(buffer), STRING_SIZE, f1)) > 0) {
-            write(fd[WRITE_END], sizeof(buffer), f1);
+        while ((bytes_read = fread(buffer, sizeof(char), STRING_SIZE, f1)) > 0) {
+            printf("In while loop, reading and writing..");
+            write(fd[WRITE_END], buffer, bytes_read);
         }
         fclose(f1);
         close(fd[READ_END]);
