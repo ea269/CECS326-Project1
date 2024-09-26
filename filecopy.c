@@ -58,11 +58,11 @@ int main(int argc, char *argv[]) {
         char buffer[BUFFER_SIZE];
         ssize_t bytes_read;  // cannot declare this in while loop
 
-        // read from pipe
+        // check for errors when reading from pipe
         if (read(fd[READ_END], buffer, BUFFER_SIZE) == -1) {
             printf("Could not read from the pipe.\n");
             exit(EXIT_FAILURE);
-        } else {
+        } else {  // read from pipe
             bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE);
         }
 
@@ -80,21 +80,23 @@ int main(int argc, char *argv[]) {
 
         // open the source file to read
         FILE *f1 = fopen(argv[1], "r");
+
+        // check for error when opening source
         if (f1 == NULL) {
             printf("Error opening source file.\n");
             exit(EXIT_FAILURE);
-        } else {
+        } else {  // comfirm to user source opened
             printf("Source file opened.\n");
         }
 
         char buffer[BUFFER_SIZE];
         ssize_t bytes_read;  // cannot declare this in while loop
 
-        // read from souce file
-        bytes_read = fread(buffer, sizeof(char), BUFFER_SIZE, f1);
-
+        // check for error when reading from source file
         if ((bytes_read = read(fd[READ_END], buffer, BUFFER_SIZE)) == 0) {
             printf("Could not read from source file.\n");
+        } else {  // read from souce file
+            bytes_read = fread(buffer, sizeof(char), BUFFER_SIZE, f1);
         }
 
         // write to pipe
