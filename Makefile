@@ -12,6 +12,7 @@ default: # Default make, explains the steps (NOTE: @ removes the echo, just show
 	@echo "make showO		# Runs cat on output.txt"
 	@echo "make clean		# Runs rm on filecopy and output.txt"
 	@echo "make main		# Runs all commands"
+	@echo "NOTE: Adjust input file by changing variable in the file."
 
 compile:  # Compile the program
 	$(CC) filecopy.c -o $(EXEC) 
@@ -28,4 +29,4 @@ showO:  # Show the contents of output.txt
 clean:   # Remove the executable and output file
 	rm -f $(EXEC) $(OUTPUT)
 
-main: compile showI exec showO clean  # Run all steps      
+main: compile showI exec showO clean  # Run all steps
