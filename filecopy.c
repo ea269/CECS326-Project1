@@ -44,9 +44,9 @@ int main(int argc, char *argv[]) {
         close(fd[WRITE_END]);
 
         // Lets user know what process is currently running
-        printf("Running child process...\n");
+        //printf("Running child process...\n");
 
-        // open the destination file to write
+       // open the destination file to write
         FILE *f2 = fopen(argv[2], "w");
         if (f2 == NULL) {
             printf("Error opening destination file.\n");
@@ -73,16 +73,19 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
 
-        printf("Child process done.\n");
+        //printf("Child process done.\n");
         fclose(f2);
         close(fd[READ_END]);
+
+        printf("File successfully copied from %s to %s.\n", argv[1], argv[2]);
+
 
     } else {  // parent process
         // closes the write pipe
         close(fd[READ_END]);
 
         //  lets user know what process is running
-        printf("Running Parent process...\n");
+        //printf("Running Parent process...\n");
 
         // open the source file to read
         FILE *f1 = fopen(argv[1], "r");
@@ -106,11 +109,12 @@ int main(int argc, char *argv[]) {
             } 
         }
         // NOTE: you only need to write once, checking for error also writes to pipe either way
-        
-        printf("Parent process done.\n");
+
+        //printf("Parent process done.\n");
         fclose(f1);
         close(fd[WRITE_END]);
         wait(NULL);  // waiting on child process to finish
     }
+
     return 0;
 }

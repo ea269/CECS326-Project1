@@ -1,5 +1,3 @@
-This is some input text as an example.
-This is another line.
-So is this one.
-And this one.
-Testing
+This is the content of the input file.
+It contains some text we want to copy.
+
