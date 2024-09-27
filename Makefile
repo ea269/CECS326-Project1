@@ -1,3 +1,9 @@
+# Some varaibles for easier changing
+CC = gcc
+INPUT = input.txt
+OUTPUT = output.txt
+EXEC = filecopy
+
 default: # Default make, explains the steps (NOTE: @ removes the echo, just shows string)
 	@echo "This make file can run via following commands:"
 	@echo "make compile		# Compiles program"
@@ -8,18 +14,18 @@ default: # Default make, explains the steps (NOTE: @ removes the echo, just show
 	@echo "make main		# Runs all commands"
 
 compile:  # Compile the program
-	gcc filecopy.c -o filecopy        
+	$(CC) filecopy.c -o $(EXEC) 
 
 showI:  # Show the contents of input.txt
 	cat input.txt  
 
-exec:  # Execute the compiled program
-	./filecopy input.txt output.txt
+exec:  # Execute the compiled program (NOTE: $() is how you call variables, like javascript)
+	./$(EXEC) $(INPUT) $(OUTPUT)
 
 showO:  # Show the contents of output.txt
-	cat output.txt                 
+	cat $(OUTPUT)
 
 clean:   # Remove the executable and output file
-	rm -f filecopy output.txt
+	rm -f $(EXEC) $(OUTPUT)
 
 main: compile showI exec showO clean  # Run all steps      
