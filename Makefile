@@ -1,11 +1,11 @@
 default: # Default make, explains the steps (NOTE: @ removes the echo, just shows string)
 	@echo "This make file can run via following commands:"
-	@echo "make compile			# Compiles the program"
-	@echo "make showI			# Runs cat on input.txt"
-	@echo "make exec			# Runs the exec with input.txt and output.txt"
-	@echo "make showO			# Runs cat on output.txt"
-	@echo "make clean			# Runs rm on filecopy and output.txt"
-	@echo "make main			# Runs all commands"
+	@echo "make compile		# Compiles program"
+	@echo "make showI		# Runs cat on input.txt"
+	@echo "make exec		# Runs exec with input.txt and output.txt"
+	@echo "make showO		# Runs cat on output.txt"
+	@echo "make clean		# Runs rm on filecopy and output.txt"
+	@echo "make main		# Runs all commands"
 
 compile:  # Compile the program
 	gcc filecopy.c -o filecopy        

@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
         printf("Please enter 2 parameters:\n");
         printf("Parameter 1: Source file.\n");
         printf("Parameter 2: Destination file.\n");
-        printf("Example: filecopy source.txt destination.txt\n");
+        printf("Example: filecopy input.txt output.txt\n");
         exit(EXIT_FAILURE);
     }
 
@@ -51,9 +51,9 @@ int main(int argc, char *argv[]) {
         if (f2 == NULL) {
             printf("Error opening destination file.\n");
             exit(EXIT_FAILURE);
-        } else {
+        } /*else {  // comfirm to user source opened
             printf("Destination file opened.\n");
-        }
+        }*/
 
         char buffer[BUFFER_SIZE];
         ssize_t bytes_read;  // NOTE: cannot declare this in while loop
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
         fclose(f2);
         close(fd[READ_END]);
 
-        printf("File successfully copied from %s to %s.\n", argv[1], argv[2]);
+        printf("File successfully copied from %s to %s.\n\n", argv[1], argv[2]);
 
 
     } else {  // parent process
@@ -94,9 +94,9 @@ int main(int argc, char *argv[]) {
         if (f1 == NULL) {
             printf("Error opening source file.\n");
             exit(EXIT_FAILURE);
-        } else {  // comfirm to user source opened
+        } /*else {  // comfirm to user source opened
             printf("Source file opened.\n");
-        }
+        }*/
 
         char buffer[BUFFER_SIZE];
         ssize_t bytes_read;  // cannot declare this in while loop
