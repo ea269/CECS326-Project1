@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
         printf("Please enter 2 parameters:\n");
         printf("Parameter 1: Source file.\n");
         printf("Parameter 2: Destination file.\n");
-        printf("Example: filecopy source.txt destination.txt\n");
+        printf("Example: filecopy input.txt output.txt\n");
         exit(EXIT_FAILURE);
     }
 
@@ -44,16 +44,16 @@ int main(int argc, char *argv[]) {
         close(fd[WRITE_END]);
 
         // Lets user know what process is currently running
-        printf("Running child process...\n");
+        //printf("Running child process...\n");
 
-        // open the destination file to write
+       // open the destination file to write
         FILE *f2 = fopen(argv[2], "w");
         if (f2 == NULL) {
             printf("Error opening destination file.\n");
             exit(EXIT_FAILURE);
-        } else {
+        } /*else {  // comfirm to user source opened
             printf("Destination file opened.\n");
-        }
+        }*/
 
         char buffer[BUFFER_SIZE];
         ssize_t bytes_read;  // NOTE: cannot declare this in while loop
@@ -73,16 +73,19 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
 
-        printf("Child process done.\n");
+        //printf("Child process done.\n");
         fclose(f2);
         close(fd[READ_END]);
+
+        printf("File successfully copied from %s to %s.\n\n", argv[1], argv[2]);
+
 
     } else {  // parent process
         // closes the write pipe
         close(fd[READ_END]);
 
         //  lets user know what process is running
-        printf("Running Parent process...\n");
+        //printf("Running Parent process...\n");
 
         // open the source file to read
         FILE *f1 = fopen(argv[1], "r");
@@ -91,9 +94,9 @@ int main(int argc, char *argv[]) {
         if (f1 == NULL) {
             printf("Error opening source file.\n");
             exit(EXIT_FAILURE);
-        } else {  // comfirm to user source opened
+        } /*else {  // comfirm to user source opened
             printf("Source file opened.\n");
-        }
+        }*/
 
         char buffer[BUFFER_SIZE];
         ssize_t bytes_read;  // cannot declare this in while loop
@@ -106,11 +109,12 @@ int main(int argc, char *argv[]) {
             } 
         }
         // NOTE: you only need to write once, checking for error also writes to pipe either way
-        
-        printf("Parent process done.\n");
+
+        //printf("Parent process done.\n");
         fclose(f1);
         close(fd[WRITE_END]);
         wait(NULL);  // waiting on child process to finish
     }
+
     return 0;
 }

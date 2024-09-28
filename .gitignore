@@ -43,4 +43,3 @@ lost+found/
 # Ignore CMake and Makefile generated files
 CMakeFiles/
 CMakeCache.txt
-Makefile
